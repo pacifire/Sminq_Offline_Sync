@@ -20,7 +20,10 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
 import offline_test.sminq.com.sminq_offlinelisting_test.abstracts.BaseActivity;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
 import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
@@ -56,15 +59,83 @@ public class MainActivity extends BaseActivity {
     @AfterViews
     void initializations(){
 
-        if(testDataAl == null)
-            handleErrorView(null);
-        else
-            handleCorrectView();
+
+        /**
+         * Lets check if Table has entries or not !
+         * If yes, then fetch the data & store in ArrayList
+         * **/
+        setTestDataFromTable();
+
+
+
+//        if(testDataAl == null)
+//            handleErrorView(null);
+//        else
+//            handleCorrectView();
 
 
 
         mToolbar.setTitle(getString(R.string.app_name));
     }//initializations closes here....
+
+
+
+
+    /**
+     * This method will fetch data from the table & add in the ArrayList.
+     * such that data can be displayed in the RecyclerView.
+     * **/
+    private void setTestDataFromTable() {
+
+//        Realm getRealmData = Realm.getDefaultInstance();
+//        getRealmData.executeTransactionAsync(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//
+//            }//execute closes here....
+//        }, new Realm.Transaction.OnSuccess() {
+//            @Override
+//            public void onSuccess() {
+//
+//            }//onSuccess closes here....
+//        }, new Realm.Transaction.OnError() {
+//            @Override
+//            public void onError(Throwable error) {
+//
+//            }//onError closes here....
+//        });//getRealmData.executeTransactionAsync closes here.....
+
+        Realm getRealmData = Realm.getDefaultInstance();
+        RealmResults<TestDataPOJO> unSyncedTestResults = getRealmData.where(TestDataPOJO.class).equalTo("isUploaded", false).findAll();
+
+        if(unSyncedTestResults != null) {
+            if (unSyncedTestResults.size() > 0) {
+                //Lets store the Results...
+
+
+                //Convert Array to ArrayList...
+//                TestDataPOJO[] unSyncedArray = (TestDataPOJO[]) unSyncedTestResults.toArray();
+                testDataAl = new ArrayList<TestDataPOJO>(unSyncedTestResults);
+                Log.d(TAG, "testDataAl size: "+testDataAl.size());
+
+                handleCorrectView();
+
+            }//if(unSyncedTestResults.size() > 0) closes here...
+            else{
+                //No data found....
+                testDataAl = null;
+                handleErrorView(null);
+            }//else closes here....
+        }//if(unSyncedTestResults != null) closes here....
+        else{
+            //No data found....
+            testDataAl = null;
+            handleErrorView(null);
+        }//else closes here....
+
+
+//        Log.d(TAG, "setTestDataFromTable: "+unSyncedTestResults.size()); // => 0 because no dogs have been added to the Realm yet
+    }//setTestDataFromTable closes here....
 
 
     private void handleCorrectView() {
