@@ -63,6 +63,12 @@ public class MainActivity extends BaseActivity {
     @AfterViews
     void initializations(){
 
+        //Registering the Broadcast receiever....
+        newTaskAddedReceiver = new NewTaskAddedReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AppConstants.NEW_TASK_ADDED_BROADCAST);
+        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(newTaskAddedReceiver, intentFilter);
+
 
         /**
          * Lets check if Table has entries or not !
@@ -171,19 +177,6 @@ public class MainActivity extends BaseActivity {
         startActivity(new Intent(MainActivity.this, AddNewTestActivity_.class));
     }//addNewTest closes here....
 
-
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        //Registering the Broadcast receiever....
-        newTaskAddedReceiver = new NewTaskAddedReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(AppConstants.NEW_TASK_ADDED_BROADCAST);
-        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(newTaskAddedReceiver, intentFilter);
-    }//onStart closes here...
 
 
 
