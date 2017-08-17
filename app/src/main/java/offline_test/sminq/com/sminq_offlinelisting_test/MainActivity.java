@@ -72,6 +72,7 @@ public class MainActivity extends BaseActivity {
 
 
     private void handleErrorView(@Nullable String errorMsg) {
+
         mErrorContainer.setVisibility(View.VISIBLE);
         mTasksRecyclerV.setVisibility(View.GONE);
         mAddNewTestBtn.setVisibility(View.VISIBLE);

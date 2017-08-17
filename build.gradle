@@ -14,6 +14,9 @@ buildscript {
         // in the individual module build.gradle files
         // replace with the current version of the Android plugin
         classpath 'com.android.tools.build:gradle:2.3.0'
+
+
+//        classpath "io.realm:realm-gradle-plugin:3.5.0"
     }
 }
 
