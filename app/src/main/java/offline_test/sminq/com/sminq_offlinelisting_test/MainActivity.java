@@ -1,5 +1,6 @@
 package offline_test.sminq.com.sminq_offlinelisting_test;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -12,11 +13,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import offline_test.sminq.com.sminq_offlinelisting_test.abstracts.BaseActivity;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
 
 /**
@@ -24,7 +27,7 @@ import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
  */
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     //High priority UI variables goes below.....
     @ViewById(R.id.errorContainerRl) RelativeLayout mErrorContainer;
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     }//handleCorrectView closes here....
 
 
+
+
     private void handleErrorView(@Nullable String errorMsg) {
         mErrorContainer.setVisibility(View.VISIBLE);
         mTasksRecyclerV.setVisibility(View.GONE);
@@ -78,12 +83,18 @@ public class MainActivity extends AppCompatActivity {
     }//handleErrorView closes here....
 
 
-    private void handleNoInternetView(){
-        handleErrorView(null);
 
-        mErrorTxtV.setText(getString(R.string.noInternetErrorString));
+
+    private void handleNoInternetView(){
+        handleErrorView(getString(R.string.noInternetErrorString));
+
         mAddNewTestBtn.setVisibility(View.GONE);
     }//handleNoInternetView closes here....
 
 
+
+    @Click({R.id.addNewDataBtn, R.id.fab})
+    void addNewTest(){
+        startActivity(new Intent(MainActivity.this, AddNewTestActivity_.class));
+    }//addNewTest closes here....
 }//MainActivity closes here....

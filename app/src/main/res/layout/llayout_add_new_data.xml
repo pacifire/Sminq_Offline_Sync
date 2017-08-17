@@ -27,6 +27,7 @@
         android:layout_below="@id/errorTxtV"
         android:gravity="center"
         android:layout_centerHorizontal="true"
-        android:text="@string/addNewTestString"/>
+        android:text="@string/addNewTestString"
+        android:layout_marginTop="@dimen/fab_margin"/>
 
 </RelativeLayout>
