@@ -1,10 +1,12 @@
 package offline_test.sminq.com.sminq_offlinelisting_test.pojo;
 
+import io.realm.RealmObject;
+
 /**
  * Created by Pawan on 17/08/17.
  */
 
-public class TestDataPOJO{
+public class TestDataPOJO extends RealmObject{
 
 
     private String taskTitle;

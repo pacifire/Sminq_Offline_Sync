@@ -1,12 +1,10 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'realm-android'
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-
 def AAVersion = '4.3.1'
 
-//apply plugin: 'realm-android'
+
 
 
 android {

@@ -13,7 +13,9 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
+import io.realm.Realm;
 import offline_test.sminq.com.sminq_offlinelisting_test.abstracts.BaseActivity;
+import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
 
 /**
  * Created by Pawan on 17/08/17.
@@ -61,6 +63,19 @@ public class AddNewTestActivity extends BaseActivity {
         if(flag){
             addNewDataFAB.startAnimation(AnimationUtils.loadAnimation(AddNewTestActivity.this, R.anim.fab_roate_fwd));
             addNewDataFAB.setClickable(false);
+
+
+            //Lets add data in Realm....
+            Realm addRealmData = Realm.getDefaultInstance();
+            addRealmData.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    TestDataPOJO newTestObject = realm.createObject(TestDataPOJO.class);
+                    newTestObject.setTaskTitle(mTaskNameEdtTxt.getText().toString().trim());
+                    newTestObject.setTaskDescription(mTaskDescEdtTxt.getText().toString().trim());
+                }
+            });
+
 
         }//if(flag) closes here....
 
