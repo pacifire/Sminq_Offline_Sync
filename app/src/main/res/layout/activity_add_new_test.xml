@@ -41,7 +41,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/addTaskDescriptionHint"
             android:maxLines="2"
-            android:inputType="textCapSentences"/>
+            android:inputType="textCapSentences"
+            android:maxLength="250"/>
 
     </android.support.design.widget.TextInputLayout>
 

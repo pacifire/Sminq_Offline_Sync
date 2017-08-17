@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import offline_test.sminq.com.sminq_offlinelisting_test.abstracts.BaseActivity;
+import offline_test.sminq.com.sminq_offlinelisting_test.adapters.TasksListAdapter;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
 import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
 
@@ -87,24 +90,6 @@ public class MainActivity extends BaseActivity {
      * **/
     private void setTestDataFromTable() {
 
-//        Realm getRealmData = Realm.getDefaultInstance();
-//        getRealmData.executeTransactionAsync(new Realm.Transaction() {
-//            @Override
-//            public void execute(Realm realm) {
-//
-//            }//execute closes here....
-//        }, new Realm.Transaction.OnSuccess() {
-//            @Override
-//            public void onSuccess() {
-//
-//            }//onSuccess closes here....
-//        }, new Realm.Transaction.OnError() {
-//            @Override
-//            public void onError(Throwable error) {
-//
-//            }//onError closes here....
-//        });//getRealmData.executeTransactionAsync closes here.....
-
         Realm getRealmData = Realm.getDefaultInstance();
         RealmResults<TestDataPOJO> unSyncedTestResults = getRealmData.where(TestDataPOJO.class).equalTo("isUploaded", false).findAll();
 
@@ -114,11 +99,13 @@ public class MainActivity extends BaseActivity {
 
 
                 //Convert Array to ArrayList...
-//                TestDataPOJO[] unSyncedArray = (TestDataPOJO[]) unSyncedTestResults.toArray();
                 testDataAl = new ArrayList<TestDataPOJO>(unSyncedTestResults);
-                Log.d(TAG, "testDataAl size: "+testDataAl.size());
+//                Log.d(TAG, "testDataAl size: "+testDataAl.size());
 
                 handleCorrectView();
+
+
+                setAdapter();
 
             }//if(unSyncedTestResults.size() > 0) closes here...
             else{
@@ -133,9 +120,26 @@ public class MainActivity extends BaseActivity {
             handleErrorView(null);
         }//else closes here....
 
-
-//        Log.d(TAG, "setTestDataFromTable: "+unSyncedTestResults.size()); // => 0 because no dogs have been added to the Realm yet
     }//setTestDataFromTable closes here....
+
+
+    /**
+     * This method sets the Adapter on the Recyclerview.
+     * **/
+    private void setAdapter() {
+        if(testDataAl != null){
+
+            TasksListAdapter tasksListAdapter = new TasksListAdapter();
+            tasksListAdapter.setTestsAl(testDataAl);
+
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
+            mTasksRecyclerV.setLayoutManager(mLayoutManager);
+            mTasksRecyclerV.setItemAnimator(new DefaultItemAnimator());
+            mTasksRecyclerV.setAdapter(tasksListAdapter);
+        }//if(testDataAl != null) closes here....
+        else
+            Log.e(TAG, "Unhandled condition: testDataAl is null.");
+    }//setAdapter closes here....
 
 
     private void handleCorrectView() {
@@ -192,6 +196,9 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(newTaskAddedReceiver);
     }//onDestroy closes here.....
+
+
+
 
     /////////////////..............BROADCAST RECEIVER FOR NEWLY ADDED TASK............\\\\\\\\\\\\\\\\\\
     private class NewTaskAddedReceiver extends BroadcastReceiver {
