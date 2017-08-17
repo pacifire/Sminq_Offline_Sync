@@ -1,12 +1,18 @@
 package offline_test.sminq.com.sminq_offlinelisting_test;
 
+import android.content.Intent;
 import android.graphics.Matrix;
+import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -16,6 +22,7 @@ import org.androidannotations.annotations.ViewById;
 import io.realm.Realm;
 import offline_test.sminq.com.sminq_offlinelisting_test.abstracts.BaseActivity;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
+import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
 
 /**
  * Created by Pawan on 17/08/17.
@@ -30,6 +37,7 @@ public class AddNewTestActivity extends BaseActivity {
     @ViewById(R.id.tasDescTIEdtTxt) TextInputEditText mTaskDescEdtTxt;
     @ViewById(R.id.taskNameTIL) TextInputLayout mTaskNameInputLayout;
     @ViewById(R.id.taskDescTIL) TextInputLayout mDescInputLayout;
+    @ViewById(R.id.addNewDataParentContainer) ConstraintLayout mParentContainer;
 
 
 
@@ -67,7 +75,7 @@ public class AddNewTestActivity extends BaseActivity {
 
             //Lets add data in Realm....
             Realm addRealmData = Realm.getDefaultInstance();
-            addRealmData.executeTransaction(new Realm.Transaction() {
+            addRealmData.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     TestDataPOJO newTestObject = realm.createObject(TestDataPOJO.class);
@@ -75,7 +83,37 @@ public class AddNewTestActivity extends BaseActivity {
                     newTestObject.setTaskDescription(mTaskDescEdtTxt.getText().toString().trim());
                     newTestObject.setUploaded(false);
                 }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    //If entry is added Successfully in the Realm Object then control comes here....
+//                    Toast.makeText(AddNewTestActivity.this, getString(R.string.newTaskAddSuccessMsg), Toast.LENGTH_SHORT).show();
+
+                    Snackbar.make(mParentContainer, getString(R.string.newTaskAddSuccessMsg), Snackbar.LENGTH_SHORT).show();
+
+
+
+
+                    //Lets broadcast this new Task, such that it can be displayed in the List....
+                    Intent newTaskAddedIntent = new Intent();
+                    newTaskAddedIntent.putExtra(AppConstants.NEW_TASK_NAME_EXTRA, mTaskNameEdtTxt.getText().toString().trim());
+                    newTaskAddedIntent.putExtra(AppConstants.NEW_TASK_DESC_EXTRA, mTaskDescEdtTxt.getText().toString().trim());
+                    newTaskAddedIntent.setAction(AppConstants.NEW_TASK_ADDED_BROADCAST);
+                    LocalBroadcastManager.getInstance(AddNewTestActivity.this).sendBroadcast(newTaskAddedIntent);
+
+
+
+                    //REset UI for new entry.....
+                    mTaskNameEdtTxt.setText("");
+                    mTaskDescEdtTxt.setText("");
+                    mTaskNameEdtTxt.requestFocus();
+
+
+                    addNewDataFAB.setClickable(true);
+                }//onSuccess closes here.....
             });
+
+
 
 
         }//if(flag) closes here....
@@ -96,14 +134,14 @@ public class AddNewTestActivity extends BaseActivity {
             //TaskName is empty...
             mTaskNameInputLayout.setErrorEnabled(true);
             mDescInputLayout.setErrorEnabled(false);
-            mTaskNameInputLayout.setError("Task Name cannot be empty !");
+            mTaskNameInputLayout.setError(getString(R.string.taskNameEmptyErrorMsg));
             return false;
         }//if taskname is empty closes her.....
         else if(mTaskDescEdtTxt.getText().toString().trim().isEmpty() || mTaskDescEdtTxt.getText().toString().trim().equals("")){
             //Task Details are empty....
             mDescInputLayout.setErrorEnabled(true);
             mTaskNameInputLayout.setErrorEnabled(false);
-            mDescInputLayout.setError("Task Name cannot be empty !");
+            mDescInputLayout.setError(getString(R.string.taskDescEmptyErrorMsg));
             return false;
         }//else desciption is empty closes here....
         else

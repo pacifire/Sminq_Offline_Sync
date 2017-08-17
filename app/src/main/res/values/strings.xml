@@ -12,4 +12,7 @@
     <!-- Strings for Add New Testing Activity goes below -->
     <string name="addTaskNameHint">Task name</string>
     <string name="addTaskDescriptionHint">Task description</string>
+    <string name="newTaskAddSuccessMsg">New task added successfully.</string>
+    <string name="taskNameEmptyErrorMsg">Task Name cannot be empty !</string>
+    <string name="taskDescEmptyErrorMsg">Task description cannot be empty !</string>
 </resources>

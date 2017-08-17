@@ -1,9 +1,11 @@
 package offline_test.sminq.com.sminq_offlinelisting_test;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.content.IntentFilter;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 
 import offline_test.sminq.com.sminq_offlinelisting_test.abstracts.BaseActivity;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
+import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
 
 /**
  * Created by Pawan on 17/08/17.
@@ -39,6 +42,7 @@ public class MainActivity extends BaseActivity {
 
     //Medium priority NON-UI variables goes below....
     private ArrayList<TestDataPOJO> testDataAl;
+    private NewTaskAddedReceiver newTaskAddedReceiver;
 
 
 
@@ -98,4 +102,35 @@ public class MainActivity extends BaseActivity {
     void addNewTest(){
         startActivity(new Intent(MainActivity.this, AddNewTestActivity_.class));
     }//addNewTest closes here....
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //Registering the Broadcast receiever....
+        newTaskAddedReceiver = new NewTaskAddedReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AppConstants.NEW_TASK_ADDED_BROADCAST);
+        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(newTaskAddedReceiver, intentFilter);
+    }//onResume closes here....
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(newTaskAddedReceiver);
+    }//onDestroy closes here.....
+
+    /////////////////..............BROADCAST RECEIVER FOR NEWLY ADDED TASK............\\\\\\\\\\\\\\\\\\
+    private class NewTaskAddedReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if(!isDestroyed()) {//Not condition....
+                Log.d(TAG, "onReceive: ");
+            }//if(!isDestroyed()) closes here.....
+        }//onReceive closes here.....
+    }//NewTaskAddedReceiver closes here....
 }//MainActivity closes here....
