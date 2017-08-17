@@ -49,6 +49,7 @@ public class MainActivity extends BaseActivity {
     //Medium priority NON-UI variables goes below....
     private ArrayList<TestDataPOJO> testDataAl;
     private NewTaskAddedReceiver newTaskAddedReceiver;
+    private TasksListAdapter tasksListAdapter;
 
 
 
@@ -68,13 +69,6 @@ public class MainActivity extends BaseActivity {
          * If yes, then fetch the data & store in ArrayList
          * **/
         setTestDataFromTable();
-
-
-
-//        if(testDataAl == null)
-//            handleErrorView(null);
-//        else
-//            handleCorrectView();
 
 
 
@@ -129,7 +123,7 @@ public class MainActivity extends BaseActivity {
     private void setAdapter() {
         if(testDataAl != null){
 
-            TasksListAdapter tasksListAdapter = new TasksListAdapter();
+            tasksListAdapter = new TasksListAdapter();
             tasksListAdapter.setTestsAl(testDataAl);
 
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
@@ -164,7 +158,6 @@ public class MainActivity extends BaseActivity {
 
 
 
-
     private void handleNoInternetView(){
         handleErrorView(getString(R.string.noInternetErrorString));
 
@@ -179,16 +172,19 @@ public class MainActivity extends BaseActivity {
     }//addNewTest closes here....
 
 
+
+
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
 
         //Registering the Broadcast receiever....
         newTaskAddedReceiver = new NewTaskAddedReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AppConstants.NEW_TASK_ADDED_BROADCAST);
         LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(newTaskAddedReceiver, intentFilter);
-    }//onResume closes here....
+    }//onStart closes here...
+
 
 
     @Override
@@ -207,7 +203,33 @@ public class MainActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
 
             if(!isDestroyed()) {//Not condition....
-                Log.d(TAG, "onReceive: ");
+                Log.d(TAG, "onReceive: "+intent.getStringExtra(AppConstants.NEW_TASK_NAME_EXTRA));
+
+                if(testDataAl == null)
+                    testDataAl = new ArrayList<TestDataPOJO>();
+
+                TestDataPOJO newDataPOJO = new TestDataPOJO();
+                newDataPOJO.setTaskTitle(intent.getStringExtra(AppConstants.NEW_TASK_NAME_EXTRA));
+                newDataPOJO.setTaskDescription(intent.getStringExtra(AppConstants.NEW_TASK_DESC_EXTRA));
+                newDataPOJO.setUploaded(false);
+
+                testDataAl.add(0, newDataPOJO);
+
+
+
+
+                //Now lets notify the adapter for position 1....
+                if(tasksListAdapter == null){
+                    handleCorrectView();
+
+                    setAdapter();
+                }//if(tasksListAdapter == null) closes here....
+                else {
+                    //else notify the adaptre for additiona t 0th position...
+                    tasksListAdapter.setTestsAl(testDataAl);
+                    tasksListAdapter.notifyItemInserted(0);
+                }//else closes here.....
+
             }//if(!isDestroyed()) closes here.....
         }//onReceive closes here.....
     }//NewTaskAddedReceiver closes here....
