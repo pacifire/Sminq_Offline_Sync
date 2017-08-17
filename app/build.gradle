@@ -27,6 +27,17 @@ android {
     }
 }
 
+
+
+/////////////.....................FOR STHETHO................\\\\\\\\\\\\\\\\\\\\
+repositories {
+    maven {
+        url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
+    }
+}
+
+
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -44,6 +55,7 @@ dependencies {
     compile "org.androidannotations:androidannotations-api:$AAVersion"
 
 
-    //For Realm...
-    //compile 'io.realm:realm-android:0.86.0'
+    //For Sthetho....
+    compile 'com.facebook.stetho:stetho:1.5.0'
+    compile 'com.uphyca:stetho_realm:2.1.0'
 }

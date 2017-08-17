@@ -73,6 +73,7 @@ public class AddNewTestActivity extends BaseActivity {
                     TestDataPOJO newTestObject = realm.createObject(TestDataPOJO.class);
                     newTestObject.setTaskTitle(mTaskNameEdtTxt.getText().toString().trim());
                     newTestObject.setTaskDescription(mTaskDescEdtTxt.getText().toString().trim());
+                    newTestObject.setUploaded(false);
                 }
             });
 
