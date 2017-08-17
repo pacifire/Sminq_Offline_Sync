@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/errorContainerRl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/fab_margin"
+    android:visibility="gone">
+
+
+
+    <TextView
+        android:id="@+id/errorTxtV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:paddingBottom="@dimen/minMargin"
+        android:paddingTop="@dimen/minMargin"/>
+
+
+    <Button
+        android:id="@+id/addNewDataBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/errorTxtV"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:text="@string/addNewTestString"/>
+
+</RelativeLayout>

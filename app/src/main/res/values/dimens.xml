@@ -1,0 +1,7 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+
+
+    <dimen name="minMargin">5dp</dimen>
+    <dimen name="widget_min_ht">25dp</dimen>
+</resources>
