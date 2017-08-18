@@ -32,6 +32,7 @@ import org.androidannotations.annotations.ViewById;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -121,6 +122,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
                 //Convert Array to ArrayList...
                 testDataAl = new ArrayList<TestDataPOJO>(allResults);
+                Collections.reverse(testDataAl);//Bcoz last added should be visible frst...
 
                 handleCorrectView();
 
