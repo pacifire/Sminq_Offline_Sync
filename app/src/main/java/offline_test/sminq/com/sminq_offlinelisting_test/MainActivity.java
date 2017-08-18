@@ -16,6 +16,14 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
@@ -29,6 +37,7 @@ import io.realm.RealmResults;
 import offline_test.sminq.com.sminq_offlinelisting_test.abstracts.BaseActivity;
 import offline_test.sminq.com.sminq_offlinelisting_test.adapters.TasksListAdapter;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
+import offline_test.sminq.com.sminq_offlinelisting_test.threads.SminqJobService;
 import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
 
 /**
@@ -50,7 +59,7 @@ public class MainActivity extends BaseActivity {
     private ArrayList<TestDataPOJO> testDataAl;
     private NewTaskAddedReceiver newTaskAddedReceiver;
     private TasksListAdapter tasksListAdapter;
-
+    private FirebaseJobDispatcher mDispatcher;
 
 
     //Least priority variables goes below....
@@ -79,7 +88,15 @@ public class MainActivity extends BaseActivity {
 
 
         mToolbar.setTitle(getString(R.string.app_name));
+
+
+
+        //////////////////..............CREATING JOB DISPATCHER....................\\\\\\\\\\\\\\\\\\
+        scheduleTheJob();
+
+
     }//initializations closes here....
+
 
 
 
@@ -91,19 +108,17 @@ public class MainActivity extends BaseActivity {
     private void setTestDataFromTable() {
 
         Realm getRealmData = Realm.getDefaultInstance();
-        RealmResults<TestDataPOJO> unSyncedTestResults = getRealmData.where(TestDataPOJO.class).equalTo("isUploaded", false).findAll();
+//        RealmResults<TestDataPOJO> unSyncedTestResults = getRealmData.where(TestDataPOJO.class).equalTo("isUploaded", false).findAll();
+        RealmResults<TestDataPOJO> allResults = getRealmData.where(TestDataPOJO.class).findAll();
 
-        if(unSyncedTestResults != null) {
-            if (unSyncedTestResults.size() > 0) {
+        if(allResults != null) {
+            if (allResults.size() > 0) {
                 //Lets store the Results...
 
-
                 //Convert Array to ArrayList...
-                testDataAl = new ArrayList<TestDataPOJO>(unSyncedTestResults);
-//                Log.d(TAG, "testDataAl size: "+testDataAl.size());
+                testDataAl = new ArrayList<TestDataPOJO>(allResults);
 
                 handleCorrectView();
-
 
                 setAdapter();
 
@@ -196,7 +211,7 @@ public class MainActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
 
             if(!isDestroyed()) {//Not condition....
-                Log.d(TAG, "onReceive: "+intent.getStringExtra(AppConstants.NEW_TASK_NAME_EXTRA));
+//                Log.d(TAG, "onReceive: "+intent.getStringExtra(AppConstants.NEW_TASK_NAME_EXTRA));
 
                 if(testDataAl == null)
                     testDataAl = new ArrayList<TestDataPOJO>();
@@ -226,4 +241,35 @@ public class MainActivity extends BaseActivity {
             }//if(!isDestroyed()) closes here.....
         }//onReceive closes here.....
     }//NewTaskAddedReceiver closes here....
+
+
+
+    /**
+     * This method is responsible for Job Scheduling.
+     * **/
+    private void scheduleTheJob() {
+
+        if(mDispatcher == null)
+            mDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(MainActivity.this));
+
+        /**
+         * We may need to cancel the old Jobs, so lets debug & come here again.
+         * **/
+//        mDispatcher.cancel(AppConstants.TASK_SYNC_SERVICE);
+
+
+        Job syncJob = mDispatcher.newJobBuilder()
+                .setService(SminqJobService.class)
+                .setTag(AppConstants.TASK_SYNC_SERVICE)
+                .setRecurring(true)
+                .setLifetime(Lifetime.FOREVER)
+                .setTrigger(Trigger.executionWindow(0,20))//both in seconds....
+                .setReplaceCurrent(true)
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setConstraints(Constraint.ON_ANY_NETWORK)
+                .build();
+
+        mDispatcher.mustSchedule(syncJob);
+
+    }//scheduleTheJob closes here....
 }//MainActivity closes here....

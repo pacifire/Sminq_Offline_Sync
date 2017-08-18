@@ -9,4 +9,7 @@ public class AppConstants {
     public static final String NEW_TASK_ADDED_BROADCAST = "NEW_TASK_ADDED_BROADCAST";
     public static final String NEW_TASK_NAME_EXTRA = "NEW_TASK_NAME_EXTRA";
     public static final String NEW_TASK_DESC_EXTRA = "NEW_TASK_DESC_EXTRA";
+
+
+    public static final String TASK_SYNC_SERVICE = "TASK_SYNC_SERVICE";
 }//AppConstants closes here....

@@ -25,6 +25,16 @@
 
         <activity android:name=".AddNewTestActivity_"/>
 
+
+
+        <service android:name=".threads.SminqJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
+
+
     </application>
 
 </manifest>
