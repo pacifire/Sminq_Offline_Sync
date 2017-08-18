@@ -20,14 +20,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:gravity="right|end"
         android:ellipsize="end"
         android:maxLines="2"
         android:layout_below="@id/taskTitleTxtV"
         android:layout_marginTop="@dimen/minMargin"
-        android:layout_marginLeft="@dimen/minMargin"
+        android:layout_marginLeft="@dimen/widget_min_ht"
         android:layout_marginRight="@dimen/minMargin"
-        android:layout_marginStart="@dimen/minMargin"
+        android:layout_marginStart="@dimen/widget_min_ht"
         android:layout_marginEnd="@dimen/minMargin"/>
 
 

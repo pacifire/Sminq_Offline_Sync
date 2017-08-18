@@ -342,7 +342,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
                 .setTag(AppConstants.TASK_SYNC_SERVICE)
                 .setRecurring(true)
                 .setLifetime(Lifetime.FOREVER)
-                .setTrigger(Trigger.executionWindow(0,20))//both in seconds....
+                .setTrigger(Trigger.executionWindow(0,60))//both in seconds....
                 .setReplaceCurrent(true)
                 .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                 .setConstraints(Constraint.ON_ANY_NETWORK)
@@ -352,14 +352,4 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
     }//scheduleTheJob closes here....
 
-
-
-    /////////////////..............BROADCAST RECEIVER FOR WIFI CAHNGE TASK............\\\\\\\\\\\\\\\\\\
-    private class WIFIEventReciever extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive: ");
-
-        }//onReceive closes here....
-    }//WIFIEventReciever closes here....
 }//MainActivity closes here....

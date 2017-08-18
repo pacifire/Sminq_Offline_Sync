@@ -29,7 +29,8 @@
         </activity>
 
 
-        <activity android:name=".AddNewTestActivity_"/>
+        <activity android:name=".AddNewTestActivity_"
+            android:windowSoftInputMode="adjustResize"/>
 
 
 
