@@ -1,9 +1,17 @@
 package offline_test.sminq.com.sminq_offlinelisting_test.threads;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.speech.tts.SynthesisCallback;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -12,6 +20,7 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -19,6 +28,7 @@ import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import offline_test.sminq.com.sminq_offlinelisting_test.R;
 import offline_test.sminq.com.sminq_offlinelisting_test.network.RequestQueueSingleton;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
 import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
@@ -38,6 +48,7 @@ public class SyncIntentService extends IntentService {
     //Least priority variables goes below.....
     private final String TAG = "SyncIntentService";
     public static final int REQUEST_TIMEOUT = 200000;
+    private final String SYNC_SUCCESS_CHANNEL_ID = "SYNC_SUCCESS_CHANNEL_ID";
 
 
 
@@ -66,16 +77,18 @@ public class SyncIntentService extends IntentService {
                         //Lets update the value in the Local DB....
 
                         Realm realm = Realm.getDefaultInstance();
-                        realm.executeTransaction(new Realm.Transaction(){
+                        realm.executeTransaction(new Realm.Transaction() {
 
                             @Override
                             public void execute(Realm realm) {
                                 TestDataPOJO uploadedRealResults = realm.where(TestDataPOJO.class)
-                                            .equalTo("title", pojo.getTaskTitle())
-                                            .equalTo("description",pojo.getTaskDescription())
-                                            .findFirst();
+                                        .equalTo("title", pojo.getTaskTitle())
+                                        .equalTo("description", pojo.getTaskDescription())
+                                        .findFirst();
                                 uploadedRealResults.setUploaded(true);
-//                                realm.commitTransaction();
+
+
+                                sendNotification(pojo.getTaskTitle());
                             }//execute closes here....
                         });
 
@@ -124,10 +137,6 @@ public class SyncIntentService extends IntentService {
         try {
             JSONObject response = future.get(); // this will block
 
-            Log.d(TAG, "syncDataToServer: "+response);
-            Log.d(TAG, "syncDataToServer: " + request.getHeaders());
-
-
             //Lets update the data in the Local DB, i.e. make the flag as true....
             return true;
 
@@ -139,4 +148,36 @@ public class SyncIntentService extends IntentService {
 
 
     }//syncDataToServer closes here.....
+
+
+
+
+    /**
+     * This method is responsible for displaying the Notificaton when user Enters or Exits the GeoFence.
+     * **/
+    private void sendNotification(@NotNull String title) {
+
+        NotificationCompat.Builder builder = builder = new NotificationCompat.Builder(this, SYNC_SUCCESS_CHANNEL_ID);;
+
+        // Define the notification settings.
+        builder.setSmallIcon(R.mipmap.ic_launcher)
+                // In a real app, you may want to use a library like Volley
+                // to decode the Bitmap.
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                        R.mipmap.ic_launcher))
+                .setColor(Color.RED)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(title+" uploaded successfully.");
+
+        // Dismiss notification once the user touches it.
+        builder.setAutoCancel(true);
+
+        // Get an instance of the Notification manager
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Issue the notification
+        mNotificationManager.notify(0, builder.build());
+
+    }//sendNotification closes here....
 }//SyncIntentService closes here....
