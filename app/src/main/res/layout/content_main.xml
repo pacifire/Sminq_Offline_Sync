@@ -9,19 +9,24 @@
     tools:showIn="@layout/activity_main">
 
 
-
-    <include
-        layout="@layout/llayout_add_new_data"/>
+    <include layout="@layout/llayout_add_new_data" />
 
     <include
         android:id="@+id/progressV"
-        layout="@layout/custom_progress_view"/>
+        layout="@layout/custom_progress_view" />
 
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/testRcyclerV"
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/tasksRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/testRcyclerV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </android.support.constraint.ConstraintLayout>

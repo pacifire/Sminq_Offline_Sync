@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,7 +52,7 @@ import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
  */
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends BaseActivity implements NetworkResponseListener {
+public class MainActivity extends BaseActivity implements NetworkResponseListener, SwipeRefreshLayout.OnRefreshListener {
 
     //High priority UI variables goes below.....
     @ViewById(R.id.errorContainerRl) RelativeLayout mErrorContainer;
@@ -59,6 +61,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
     @ViewById(R.id.addNewDataBtn) Button mAddNewTestBtn;
     @ViewById(R.id.toolbar) Toolbar mToolbar;
     @ViewById(R.id.progressV) RelativeLayout mProgressV;
+    @ViewById(R.id.tasksRefreshLayout) SwipeRefreshLayout mTasksRefreshLayout;
 
 
     //Medium priority NON-UI variables goes below....
@@ -100,6 +103,10 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
         //////////////////..............CREATING JOB DISPATCHER....................\\\\\\\\\\\\\\\\\\
         scheduleTheJob();
+
+
+        /////////////////............INITIALIZING THE REFRESHLAYOUT............\\\\\\\\\\\\\\\\
+        mTasksRefreshLayout.setOnRefreshListener(MainActivity.this);
     }//initializations closes here....
 
 
@@ -133,7 +140,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
                 //No data found....
 
                 //Lets call API & get data from API....
-                callAPiAndGetTestData();
+                callAPiAndGetTestData(true);
             }//else closes here....
         }//if(unSyncedTestResults != null) closes here....
         else{
@@ -142,7 +149,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 //            handleErrorView(null);
 
             //Lets call API & get data from API....
-            callAPiAndGetTestData();
+            callAPiAndGetTestData(true);
         }//else closes here....
 
     }//setTestDataFromTable closes here....
@@ -150,13 +157,22 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
 
 
-    private void callAPiAndGetTestData() {
+    private void callAPiAndGetTestData(@NonNull Boolean showProgress) {
 
-        handleProgressView();
+        String url = AppConstants.APP_URL + AppConstants.GET_TEST_RESULTS;
+        NetworkResponseHandler getTestDataHandler;
 
-        String url = AppConstants.APP_URL+AppConstants.GET_TEST_RESULTS;
-        NetworkResponseHandler getTestDataHandler = new NetworkResponseHandler(MainActivity.this, MainActivity.this,
-                url, null, mProgressV, null, true);
+        if(showProgress) {
+            handleProgressView();
+
+            getTestDataHandler = new NetworkResponseHandler(MainActivity.this, MainActivity.this,
+                    url, null, mProgressV, null, showProgress);
+        }//if(showProgress) closes here.....
+        else{
+            getTestDataHandler = new NetworkResponseHandler(MainActivity.this, MainActivity.this,
+                    url, null, null, null, showProgress);
+        }//else closes here....
+
         getTestDataHandler.setNetworkResponseListener(MainActivity.this);
         getTestDataHandler.executeGET("");
     }//callAPiAndGetTestData closes here....
@@ -236,6 +252,11 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
     @Override
     public void networkResponseSuccess(final String response) {
+
+        if(mTasksRefreshLayout != null)
+            if(mTasksRefreshLayout.isRefreshing())
+                mTasksRefreshLayout.setRefreshing(false);
+
         try {
 
             JSONObject responseObject = new JSONObject(response);
@@ -255,6 +276,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
                             setTestDataFromTable();
                         }//execute closes here....
                     });
+
                 }//if(responseObject.getJSONArray("data").length() > 0) closes here.....
                 else{
                     //Show error view...
@@ -279,10 +301,35 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
     @Override
     public void networkResponseFailure(String errorMessage) {
+
+        if(mTasksRefreshLayout != null)
+            if(mTasksRefreshLayout.isRefreshing())
+                mTasksRefreshLayout.setRefreshing(false);
+
         Snackbar.make(mErrorContainer, errorMessage.toString().trim(), Snackbar.LENGTH_SHORT).show();
 
         handleNoInternetView();
     }//networkResponseFailure closes here....
+
+    @Override
+    public void onRefresh() {
+
+
+        //1. Clear the Realm Object.....
+        final Realm truncateRealmObject = Realm.getDefaultInstance();
+        truncateRealmObject.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                truncateRealmObject.deleteAll();
+            }
+        });
+
+
+
+        //2. Call API such that method will store the data & display on the UI again....
+        callAPiAndGetTestData(false);
+
+    }//onRefresh closes here....
 
 
     /////////////////..............BROADCAST RECEIVER FOR NEWLY ADDED TASK............\\\\\\\\\\\\\\\\\\
