@@ -19,4 +19,11 @@ public class AppConstants {
     /////////////............URLS GOES BELOW.............\\\\\\\\\\\\\\
     public static final String APP_URL = "http://kwikz.nz/api/auth/pawan/";
     public static final String GET_TEST_RESULTS = "test2";
+    public static final String UPLOAD_TEST_RESULTS = "test1";
+
+
+
+
+    //////////////............VOLLEY RESPONSE TAGS GOES BELOW................\\\\\\\\\\\\\\\\\\
+    public static final String UPLOAD_UNSYNC_API_TAG = "UPLOAD_UNSYNC_API_TAG";
 }//AppConstants closes here....
