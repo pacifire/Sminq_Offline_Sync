@@ -12,4 +12,11 @@ public class AppConstants {
 
 
     public static final String TASK_SYNC_SERVICE = "TASK_SYNC_SERVICE";
+
+
+
+
+    /////////////............URLS GOES BELOW.............\\\\\\\\\\\\\\
+    public static final String APP_URL = "http://kwikz.nz/api/auth/pawan/";
+    public static final String GET_TEST_RESULTS = "test2";
 }//AppConstants closes here....

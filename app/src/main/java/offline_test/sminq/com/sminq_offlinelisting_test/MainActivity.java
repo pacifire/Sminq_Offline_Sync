@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +29,8 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +39,9 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import offline_test.sminq.com.sminq_offlinelisting_test.abstracts.BaseActivity;
 import offline_test.sminq.com.sminq_offlinelisting_test.adapters.TasksListAdapter;
+import offline_test.sminq.com.sminq_offlinelisting_test.network.NetworkResponseHandler;
+import offline_test.sminq.com.sminq_offlinelisting_test.network.NetworkResponseListener;
+import offline_test.sminq.com.sminq_offlinelisting_test.pojo.MainResponsePOJO;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
 import offline_test.sminq.com.sminq_offlinelisting_test.threads.SminqJobService;
 import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
@@ -45,7 +51,7 @@ import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
  */
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements NetworkResponseListener {
 
     //High priority UI variables goes below.....
     @ViewById(R.id.errorContainerRl) RelativeLayout mErrorContainer;
@@ -127,15 +133,31 @@ public class MainActivity extends BaseActivity {
                 //No data found....
                 testDataAl = null;
                 handleErrorView(null);
+
+                //Lets call API & get data from API....
+                callAPiAndGetTestData();
             }//else closes here....
         }//if(unSyncedTestResults != null) closes here....
         else{
             //No data found....
             testDataAl = null;
             handleErrorView(null);
+
+            //Lets call API & get data from API....
+            callAPiAndGetTestData();
         }//else closes here....
 
     }//setTestDataFromTable closes here....
+
+
+
+    private void callAPiAndGetTestData() {
+        String url = AppConstants.APP_URL+AppConstants.GET_TEST_RESULTS;
+        NetworkResponseHandler getTestDataHandler = new NetworkResponseHandler(MainActivity.this, MainActivity.this,
+                url, null, null, null, false);
+        getTestDataHandler.setNetworkResponseListener(MainActivity.this);
+        getTestDataHandler.executeGET("");
+    }//callAPiAndGetTestData closes here....
 
 
     /**
@@ -201,7 +223,31 @@ public class MainActivity extends BaseActivity {
         LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(newTaskAddedReceiver);
     }//onDestroy closes here.....
 
+    @Override
+    public void networkResponseSuccess(final String response) {
+        try {
 
+            Realm realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.createObjectFromJson(MainResponsePOJO.class, response.toString().trim());
+
+
+                    //Set adapter now....
+                    setTestDataFromTable();
+                }//execute closes here....
+            });
+        }//try closes here....
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }//networkResponseSuccess closes here....
+
+    @Override
+    public void networkResponseFailure(String errorMessage) {
+        Snackbar.make(mErrorContainer, errorMessage.toString().trim(), Snackbar.LENGTH_SHORT).show();
+    }//networkResponseFailure closes here....
 
 
     /////////////////..............BROADCAST RECEIVER FOR NEWLY ADDED TASK............\\\\\\\\\\\\\\\\\\

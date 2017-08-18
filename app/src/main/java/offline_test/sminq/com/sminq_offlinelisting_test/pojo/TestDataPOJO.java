@@ -1,6 +1,9 @@
 package offline_test.sminq.com.sminq_offlinelisting_test.pojo;
 
+import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
+
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Pawan on 17/08/17.
@@ -8,26 +11,28 @@ import io.realm.RealmObject;
 
 public class TestDataPOJO extends RealmObject{
 
+    private String title;
 
-    private String taskTitle;
-    private String taskDescription;
-    private Boolean isUploaded;
+    private String description;
+
+
+    private Boolean isUploaded = true;
 
 
     public String getTaskTitle() {
-        return taskTitle;
+        return title;
     }
 
     public void setTaskTitle(String taskTitle) {
-        this.taskTitle = taskTitle;
+        this.title = taskTitle;
     }
 
     public String getTaskDescription() {
-        return taskDescription;
+        return description;
     }
 
     public void setTaskDescription(String taskDescription) {
-        this.taskDescription = taskDescription;
+        this.description = taskDescription;
     }
 
     public Boolean getUploaded() {
