@@ -1,18 +1,13 @@
 package offline_test.sminq.com.sminq_offlinelisting_test;
 
 import android.content.Intent;
-import android.graphics.Matrix;
-import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -40,11 +35,7 @@ public class AddNewTestActivity extends BaseActivity {
     @ViewById(R.id.addNewDataParentContainer) ConstraintLayout mParentContainer;
 
 
-
-
     //Medium priority NON-UI variables goes below....
-
-
 
 
     //Least priority variables goes below.....
@@ -52,24 +43,13 @@ public class AddNewTestActivity extends BaseActivity {
 
 
 
-
-
-    @AfterViews
-    void initializations(){
-
-
-    }//initializations closes here.....
-
-
-
-
     @Click(R.id.addNewDataFAB)
-    void addData(){
+    void addData() {
 
         Boolean flag = chkValidations();
 
-        if(flag){
-            addNewDataFAB.startAnimation(AnimationUtils.loadAnimation(AddNewTestActivity.this, R.anim.fab_roate_fwd));
+        if (flag) {
+            addNewDataFAB.startAnimation(AnimationUtils.loadAnimation(AddNewTestActivity.this, R.anim.fab_rotate_fwd));
             addNewDataFAB.setClickable(false);
 
 
@@ -92,8 +72,6 @@ public class AddNewTestActivity extends BaseActivity {
                     Snackbar.make(mParentContainer, getString(R.string.newTaskAddSuccessMsg), Snackbar.LENGTH_SHORT).show();
 
 
-
-
                     //Lets broadcast this new Task, such that it can be displayed in the List....
                     Intent newTaskAddedIntent = new Intent();
                     newTaskAddedIntent.putExtra(AppConstants.NEW_TASK_NAME_EXTRA, mTaskNameEdtTxt.getText().toString().trim());
@@ -102,18 +80,16 @@ public class AddNewTestActivity extends BaseActivity {
                     LocalBroadcastManager.getInstance(AddNewTestActivity.this).sendBroadcast(newTaskAddedIntent);
 
 
-
                     //REset UI for new entry.....
                     mTaskNameEdtTxt.setText("");
                     mTaskDescEdtTxt.setText("");
                     mTaskNameEdtTxt.requestFocus();
 
 
+                    addNewDataFAB.startAnimation(AnimationUtils.loadAnimation(AddNewTestActivity.this, R.anim.fab_rotate_backward));
                     addNewDataFAB.setClickable(true);
                 }//onSuccess closes here.....
             });
-
-
 
 
         }//if(flag) closes here....
@@ -124,20 +100,20 @@ public class AddNewTestActivity extends BaseActivity {
 
     /**
      * Method to handle the validations goes below..
-     * **/
+     **/
     private Boolean chkValidations() {
 
         mTaskNameInputLayout.setError(null);
         mTaskNameInputLayout.setError(null);
 
-        if(mTaskNameEdtTxt.getText().toString().trim().isEmpty() || mTaskNameEdtTxt.getText().toString().trim().equals("")){
+        if (mTaskNameEdtTxt.getText().toString().trim().isEmpty() || mTaskNameEdtTxt.getText().toString().trim().equals("")) {
             //TaskName is empty...
             mTaskNameInputLayout.setErrorEnabled(true);
             mDescInputLayout.setErrorEnabled(false);
             mTaskNameInputLayout.setError(getString(R.string.taskNameEmptyErrorMsg));
             return false;
         }//if taskname is empty closes her.....
-        else if(mTaskDescEdtTxt.getText().toString().trim().isEmpty() || mTaskDescEdtTxt.getText().toString().trim().equals("")){
+        else if (mTaskDescEdtTxt.getText().toString().trim().isEmpty() || mTaskDescEdtTxt.getText().toString().trim().equals("")) {
             //Task Details are empty....
             mDescInputLayout.setErrorEnabled(true);
             mTaskNameInputLayout.setErrorEnabled(false);

@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
@@ -230,6 +229,8 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
         super.onDestroy();
         LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(newTaskAddedReceiver);
     }//onDestroy closes here.....
+
+
 
     @Override
     public void networkResponseSuccess(final String response) {
