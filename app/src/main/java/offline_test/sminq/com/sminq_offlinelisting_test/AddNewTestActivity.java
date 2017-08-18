@@ -66,9 +66,8 @@ public class AddNewTestActivity extends BaseActivity {
             }, new Realm.Transaction.OnSuccess() {
                 @Override
                 public void onSuccess() {
-                    //If entry is added Successfully in the Realm Object then control comes here....
-//                    Toast.makeText(AddNewTestActivity.this, getString(R.string.newTaskAddSuccessMsg), Toast.LENGTH_SHORT).show();
 
+                    //If entry is added Successfully in the Realm Object then control comes here....
                     Snackbar.make(mParentContainer, getString(R.string.newTaskAddSuccessMsg), Snackbar.LENGTH_SHORT).show();
 
 

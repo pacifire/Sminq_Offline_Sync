@@ -41,6 +41,10 @@
         </service>
 
 
+        <service android:name=".threads.SyncIntentService"
+            android:exported="false"></service>
+
+
     </application>
 
 </manifest>
