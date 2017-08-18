@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
@@ -29,11 +30,9 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -59,6 +58,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
     @ViewById(R.id.errorTxtV) TextView mErrorTxtV;
     @ViewById(R.id.addNewDataBtn) Button mAddNewTestBtn;
     @ViewById(R.id.toolbar) Toolbar mToolbar;
+    @ViewById(R.id.progressV) RelativeLayout mProgressV;
 
 
     //Medium priority NON-UI variables goes below....
@@ -85,6 +85,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
         LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(newTaskAddedReceiver, intentFilter);
 
 
+
         /**
          * Lets check if Table has entries or not !
          * If yes, then fetch the data & store in ArrayList
@@ -99,8 +100,6 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
         //////////////////..............CREATING JOB DISPATCHER....................\\\\\\\\\\\\\\\\\\
         scheduleTheJob();
-
-
     }//initializations closes here....
 
 
@@ -131,8 +130,6 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
             }//if(unSyncedTestResults.size() > 0) closes here...
             else{
                 //No data found....
-                testDataAl = null;
-                handleErrorView(null);
 
                 //Lets call API & get data from API....
                 callAPiAndGetTestData();
@@ -140,8 +137,8 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
         }//if(unSyncedTestResults != null) closes here....
         else{
             //No data found....
-            testDataAl = null;
-            handleErrorView(null);
+//            testDataAl = null;
+//            handleErrorView(null);
 
             //Lets call API & get data from API....
             callAPiAndGetTestData();
@@ -151,10 +148,14 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
 
 
+
     private void callAPiAndGetTestData() {
+
+        handleProgressView();
+
         String url = AppConstants.APP_URL+AppConstants.GET_TEST_RESULTS;
         NetworkResponseHandler getTestDataHandler = new NetworkResponseHandler(MainActivity.this, MainActivity.this,
-                url, null, null, null, false);
+                url, null, mProgressV, null, true);
         getTestDataHandler.setNetworkResponseListener(MainActivity.this);
         getTestDataHandler.executeGET("");
     }//callAPiAndGetTestData closes here....
@@ -209,6 +210,13 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
 
 
+    private void handleProgressView() {
+        mErrorContainer.setVisibility(View.GONE);
+        mTasksRecyclerV.setVisibility(View.GONE);
+    }//handleProgressView closes here...
+
+
+
     @Click({R.id.addNewDataBtn, R.id.fab})
     void addNewTest(){
         startActivity(new Intent(MainActivity.this, AddNewTestActivity_.class));
@@ -227,17 +235,39 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
     public void networkResponseSuccess(final String response) {
         try {
 
-            Realm realm = Realm.getDefaultInstance();
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    realm.createObjectFromJson(MainResponsePOJO.class, response.toString().trim());
+            JSONObject responseObject = new JSONObject(response);
+            if(responseObject.has("data")){
 
 
-                    //Set adapter now....
-                    setTestDataFromTable();
-                }//execute closes here....
-            });
+                if(responseObject.getJSONArray("data").length() > 0) {
+
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            realm.createObjectFromJson(MainResponsePOJO.class, response.toString().trim());
+
+
+                            //Set adapter now....
+                            setTestDataFromTable();
+                        }//execute closes here....
+                    });
+                }//if(responseObject.getJSONArray("data").length() > 0) closes here.....
+                else{
+                    //Show error view...
+                    testDataAl = null;
+                    handleErrorView(null);
+                }
+
+            }//if(responseObject.has("data")) closes here....
+            else{
+                //Show error view...
+                                testDataAl = null;
+                handleErrorView(null);
+            }
+
+
+
         }//try closes here....
         catch(Exception e){
             e.printStackTrace();
@@ -247,6 +277,8 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
     @Override
     public void networkResponseFailure(String errorMessage) {
         Snackbar.make(mErrorContainer, errorMessage.toString().trim(), Snackbar.LENGTH_SHORT).show();
+
+        handleNoInternetView();
     }//networkResponseFailure closes here....
 
 
@@ -318,4 +350,15 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
         mDispatcher.mustSchedule(syncJob);
 
     }//scheduleTheJob closes here....
+
+
+
+    /////////////////..............BROADCAST RECEIVER FOR WIFI CAHNGE TASK............\\\\\\\\\\\\\\\\\\
+    private class WIFIEventReciever extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive: ");
+
+        }//onReceive closes here....
+    }//WIFIEventReciever closes here....
 }//MainActivity closes here....

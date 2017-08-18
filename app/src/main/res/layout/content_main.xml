@@ -13,6 +13,10 @@
     <include
         layout="@layout/llayout_add_new_data"/>
 
+    <include
+        android:id="@+id/progressV"
+        layout="@layout/custom_progress_view"/>
+
 
 
     <android.support.v7.widget.RecyclerView
