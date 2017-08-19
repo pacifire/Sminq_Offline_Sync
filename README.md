@@ -6,6 +6,9 @@ Build a simple task list which stores entries hitting an api on remote server, t
 
 
 https://goo.gl/photos/t5BM6JpZPapaAxBt9
+
 https://goo.gl/photos/Z7ZvmVAwz46b9j1S7
+
 https://goo.gl/photos/WCPVFa4LRk9ReuqM7
+
 https://goo.gl/photos/R9k9W8ejQLBbYJJN6
