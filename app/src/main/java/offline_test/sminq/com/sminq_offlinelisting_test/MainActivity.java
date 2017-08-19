@@ -46,6 +46,7 @@ import offline_test.sminq.com.sminq_offlinelisting_test.pojo.MainResponsePOJO;
 import offline_test.sminq.com.sminq_offlinelisting_test.pojo.TestDataPOJO;
 import offline_test.sminq.com.sminq_offlinelisting_test.threads.SminqJobService;
 import offline_test.sminq.com.sminq_offlinelisting_test.utils.AppConstants;
+import offline_test.sminq.com.sminq_offlinelisting_test.utils.WrapContentLinearLayoutManager;
 
 /**
  * Created by Pawan on 17/08/17.
@@ -187,7 +188,9 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
             tasksListAdapter = new TasksListAdapter();
             tasksListAdapter.setTestsAl(testDataAl);
 
-            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
+//            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
+
+            WrapContentLinearLayoutManager mLayoutManager = new WrapContentLinearLayoutManager(MainActivity.this);
             mTasksRecyclerV.setLayoutManager(mLayoutManager);
             mTasksRecyclerV.setItemAnimator(new DefaultItemAnimator());
             mTasksRecyclerV.setAdapter(tasksListAdapter);
@@ -362,6 +365,8 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
                 }//if(tasksListAdapter == null) closes here....
                 else {
                     //else notify the adaptre for additiona t 0th position...
+                    handleCorrectView();
+
                     tasksListAdapter.setTestsAl(testDataAl);
                     tasksListAdapter.notifyItemInserted(0);
                 }//else closes here.....
