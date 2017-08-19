@@ -203,6 +203,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
     private void handleCorrectView() {
         mErrorContainer.setVisibility(View.GONE);
         mTasksRecyclerV.setVisibility(View.VISIBLE);
+        mTasksRefreshLayout.setVisibility(View.VISIBLE);
     }//handleCorrectView closes here....
 
 
@@ -212,12 +213,16 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
 
         mErrorContainer.setVisibility(View.VISIBLE);
         mTasksRecyclerV.setVisibility(View.GONE);
+        mTasksRefreshLayout.setVisibility(View.GONE);
         mAddNewTestBtn.setVisibility(View.VISIBLE);
 
         if(errorMsg == null)
             mErrorTxtV.setText(getString(R.string.noTestsFoundString));
         else
             mErrorTxtV.setText(errorMsg);
+
+
+        mProgressV.setVisibility(View.GONE);
     }//handleErrorView closes here....
 
 
@@ -233,6 +238,7 @@ public class MainActivity extends BaseActivity implements NetworkResponseListene
     private void handleProgressView() {
         mErrorContainer.setVisibility(View.GONE);
         mTasksRecyclerV.setVisibility(View.GONE);
+        mTasksRefreshLayout.setVisibility(View.GONE);
     }//handleProgressView closes here...
 
 
